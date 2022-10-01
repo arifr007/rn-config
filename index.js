@@ -71,10 +71,7 @@ module.exports = (api, options) => {
 
   const dotenvTemporary = Object.assign({}, process.env)
   if (options.verbose) {
-    console.log('rn-config-env:env-parsed:path:', options.path)
-    console.log('rn-config-env:env-localParsed:path:', localFilePath)
     console.log('rn-config-env:env-modeParsed:path:', modeFilePath)
-    console.log('rn-config-env:env-modeLocalParsed:path:', modeLocalFilePath)
   }
   if (options.safe) {
     const parsed = parseDotenvFile(options.path, options.verbose)
@@ -125,10 +122,7 @@ module.exports = (api, options) => {
 
       const dotenvTemporary = Object.assign({}, process.env)
       if (options.verbose) {
-        console.log('rn-config-env:env-parsed:path:', options.path)
-        console.log('rn-config-env:env-localParsed:path:', localFilePath)
-        console.log('rn-config-env:env-modeParsed:path:', modeParsed)
-        console.log('rn-config-env:env-modeLocalParsed:path:', modeLocalFilePath)
+        console.log('rn-config-env:using env:', modeFilePath)
       }
 
       if (this.opts.safe) {

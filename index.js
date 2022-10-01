@@ -1,4 +1,4 @@
-const {readFileSync, statSync} = require('fs')
+const { readFileSync, statSync } = require('fs')
 const dotenv = require('dotenv')
 
 function parseDotenvFile(path, verbose = false) {
@@ -75,9 +75,13 @@ module.exports = (api, options) => {
 
   const dotenvTemporary = Object.assign({}, process.env)
   if (options.safe) {
+    console.log('rn-config-env:env-parsed:path:', options.path)
     const parsed = parseDotenvFile(options.path, options.verbose)
+    console.log('rn-config-env:env-localParsed:path:', localFilePath)
     const localParsed = parseDotenvFile(localFilePath, options.verbose)
+    console.log('rn-config-env:env-modeParsed:path:', modeParsed)
     const modeParsed = parseDotenvFile(modeFilePath, options.verbose)
+    console.log('rn-config-env:env-modeLocalParsed:path:', modeLocalFilePath)
     const modeLocalParsed = parseDotenvFile(modeLocalFilePath, options.verbose)
 
     this.env = safeObjectAssign(Object.assign(Object.assign(Object.assign(parsed, modeParsed), localParsed), modeLocalParsed), dotenvTemporary, ['NODE_ENV', 'BABEL_ENV', options.envName])
@@ -127,10 +131,15 @@ module.exports = (api, options) => {
 
       const dotenvTemporary = Object.assign({}, process.env)
       if (this.opts.safe) {
+        console.log('rn-config-env:env-parsed:path:', options.path)
         const parsed = parseDotenvFile(this.opts.path, this.opts.verbose)
-        const localParsed = parseDotenvFile(localFilePath)
-        const modeParsed = parseDotenvFile(modeFilePath)
-        const modeLocalParsed = parseDotenvFile(modeLocalFilePath)
+        console.log('rn-config-env:env-localParsed:path:', localFilePath)
+        const localParsed = parseDotenvFile(localFilePath, options.verbose)
+        console.log('rn-config-env:env-modeParsed:path:', modeParsed)
+        const modeParsed = parseDotenvFile(modeFilePath, options.verbose)
+        console.log('rn-config-env:env-modeLocalParsed:path:', modeLocalFilePath)
+        const modeLocalParsed = parseDotenvFile(modeLocalFilePath, options.verbose)
+
         this.env = safeObjectAssign(Object.assign(Object.assign(Object.assign(parsed, modeParsed), localParsed), modeLocalParsed), dotenvTemporary, ['NODE_ENV', 'BABEL_ENV', options.envName])
         this.env.NODE_ENV = process.env.NODE_ENV || babelMode
       } else {
@@ -155,7 +164,7 @@ module.exports = (api, options) => {
     },
 
     visitor: {
-      ImportDeclaration(path, {opts}) {
+      ImportDeclaration(path, { opts }) {
         if (path.node.source.value === opts.moduleName) {
           for (const [idx, specifier] of path.node.specifiers.entries()) {
             if (specifier.type === 'ImportDefaultSpecifier') {
@@ -198,7 +207,7 @@ module.exports = (api, options) => {
           path.remove()
         }
       },
-      MemberExpression(path, {opts}) {
+      MemberExpression(path, { opts }) {
         if (path.get('object').matchesPattern('process.env')) {
           const key = path.toComputedKey()
           if (t.isStringLiteral(key)) {

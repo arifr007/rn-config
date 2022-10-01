@@ -3,16 +3,12 @@ const dotenv = require('dotenv')
 
 function parseDotenvFile(path, verbose = false) {
   let content
-
   try {
     content = readFileSync(path)
-    if (verbose) {
-      console.error('rn-config-env: env path', path)
-    }
   } catch (error) {
     // The env file does not exist.
     if (verbose) {
-      console.error('rn-config-env:', error)
+      console.error('rn-config-env:error:', error)
     }
 
     return {}
@@ -50,97 +46,55 @@ module.exports = (api, options) => {
   const t = api.types
   this.env = {}
   options = {
-    envName: 'ENVFILE',
     moduleName: '@env',
-    path: '.env',
-    safe: false,
+    safe: true,
     allowUndefined: true,
-    verbose: false,
+    verbose: true,
     ...options,
   }
-  const babelMode = process.env[options.envName] || (process.env.BABEL_ENV && process.env.BABEL_ENV !== 'undefined' && process.env.BABEL_ENV !== 'development' && process.env.BABEL_ENV) || process.env.NODE_ENV || 'development'
-  const localFilePath = options.path + '.local'
-  const modeFilePath = options.path + '.' + babelMode
-  const modeLocalFilePath = options.path + '.' + babelMode + '.local'
+  const envMode = process.env.ENVMODE || 'development'
 
-  api.cache.using(() => mtime(options.path))
-  api.cache.using(() => mtime(localFilePath))
-  api.cache.using(() => mtime(modeFilePath))
-  api.cache.using(() => mtime(modeLocalFilePath))
+  const envPath = `.env.${envMode}`
 
+  console.log('Reading env from:', envPath)
+  
+  api.cache.using(() => mtime(envPath))
+  
   const dotenvTemporary = Object.assign({}, process.env)
   if (options.safe) {
-    const parsed = parseDotenvFile(options.path, options.verbose)
-    const localParsed = parseDotenvFile(localFilePath, options.verbose)
-    const modeParsed = parseDotenvFile(modeFilePath, options.verbose)
-    const modeLocalParsed = parseDotenvFile(modeLocalFilePath, options.verbose)
+    const envParsed = parseDotenvFile(envPath, options.verbose)
 
-    this.env = safeObjectAssign(Object.assign(Object.assign(Object.assign(parsed, modeParsed), localParsed), modeLocalParsed), dotenvTemporary, ['NODE_ENV', 'BABEL_ENV', options.envName])
-    this.env.NODE_ENV = process.env.NODE_ENV || babelMode
+    this.env = safeObjectAssign(envParsed, dotenvTemporary, [])
+
+    this.env.NODE_ENV = envMode || babelMode
   } else {
-    dotenv.config({
-      path: modeLocalFilePath,
-      silent: true,
-    })
-    dotenv.config({
-      path: modeFilePath,
-      silent: true,
-    })
-    dotenv.config({
-      path: localFilePath,
-      silent: true,
-    })
-    dotenv.config({
-      path: options.path,
-    })
+    dotenv.config({ path: envPath, silent: true, })
     this.env = process.env
     this.env = Object.assign(this.env, dotenvTemporary)
   }
 
-  api.addExternalDependency(options.path)
-  api.addExternalDependency(localFilePath)
-  api.addExternalDependency(modeFilePath)
-  api.addExternalDependency(modeLocalFilePath)
+  api.addExternalDependency(envPath)
 
   return ({
-    name: 'dotenv-import',
+    name: 'rn-config-env',
 
     pre() {
       this.opts = {
-        envName: 'ENVFILE',
         moduleName: '@env',
-        path: '.env',
-        safe: false,
+        safe: true,
         allowUndefined: true,
-        verbose: false,
+        verbose: true,
         ...this.opts,
       }
 
       const dotenvTemporary = Object.assign({}, process.env)
 
       if (this.opts.safe) {
-        const parsed = parseDotenvFile(this.opts.path, this.opts.verbose)
-        const localParsed = parseDotenvFile(localFilePath, options.verbose)
-        const modeParsed = parseDotenvFile(modeFilePath, options.verbose)
-        const modeLocalParsed = parseDotenvFile(modeLocalFilePath, options.verbose)
-        this.env = safeObjectAssign(Object.assign(Object.assign(Object.assign(parsed, modeParsed), localParsed), modeLocalParsed), dotenvTemporary, ['NODE_ENV', 'BABEL_ENV', options.envName])
-        this.env.NODE_ENV = process.env.NODE_ENV || babelMode
+        const envParsed = parseDotenvFile(envPath, options.verbose)
+        this.env = safeObjectAssign(envParsed, dotenvTemporary, [])
+        this.env.NODE_ENV = process.env.ENVMODE || babelMode
       } else {
-        dotenv.config({
-          path: modeLocalFilePath,
-          silent: true,
-        })
-        dotenv.config({
-          path: modeFilePath,
-          silent: true,
-        })
-        dotenv.config({
-          path: localFilePath,
-          silent: true,
-        })
-        dotenv.config({
-          path: options.path,
-        })
+        dotenv.config({ path: envPath, silent: true, })
         this.env = process.env
         this.env = Object.assign(this.env, dotenvTemporary)
       }

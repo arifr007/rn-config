@@ -6,10 +6,13 @@ function parseDotenvFile(path, verbose = false) {
 
   try {
     content = readFileSync(path)
+    if (verbose) {
+      console.error('rn-config-env: env path', path)
+    }
   } catch (error) {
     // The env file does not exist.
     if (verbose) {
-      console.error('react-native-dotenv', error)
+      console.error('rn-config-env:', error)
     }
 
     return {}
@@ -60,19 +63,12 @@ module.exports = (api, options) => {
   const modeFilePath = options.path + '.' + babelMode
   const modeLocalFilePath = options.path + '.' + babelMode + '.local'
 
-  if (options.verbose) {
-    console.log('dotenvMode', babelMode)
-  }
-
   api.cache.using(() => mtime(options.path))
   api.cache.using(() => mtime(localFilePath))
   api.cache.using(() => mtime(modeFilePath))
   api.cache.using(() => mtime(modeLocalFilePath))
 
   const dotenvTemporary = Object.assign({}, process.env)
-  if (options.verbose) {
-    console.log('rn-config-env:env-modeParsed:path:', modeFilePath)
-  }
   if (options.safe) {
     const parsed = parseDotenvFile(options.path, options.verbose)
     const localParsed = parseDotenvFile(localFilePath, options.verbose)
@@ -121,9 +117,6 @@ module.exports = (api, options) => {
       }
 
       const dotenvTemporary = Object.assign({}, process.env)
-      if (options.verbose) {
-        console.log('rn-config-env:using env:', modeFilePath)
-      }
 
       if (this.opts.safe) {
         const parsed = parseDotenvFile(this.opts.path, this.opts.verbose)

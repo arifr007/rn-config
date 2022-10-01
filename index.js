@@ -50,10 +50,6 @@ module.exports = (api, options) => {
     envName: 'ENVFILE',
     moduleName: '@env',
     path: '.env',
-    whitelist: null,
-    blacklist: null,
-    allowlist: null,
-    blocklist: null,
     safe: false,
     allowUndefined: true,
     verbose: false,
@@ -74,14 +70,16 @@ module.exports = (api, options) => {
   api.cache.using(() => mtime(modeLocalFilePath))
 
   const dotenvTemporary = Object.assign({}, process.env)
-  if (options.safe) {
+  if (options.verbose) {
     console.log('rn-config-env:env-parsed:path:', options.path)
-    const parsed = parseDotenvFile(options.path, options.verbose)
     console.log('rn-config-env:env-localParsed:path:', localFilePath)
-    const localParsed = parseDotenvFile(localFilePath, options.verbose)
-    console.log('rn-config-env:env-modeParsed:path:', modeParsed)
-    const modeParsed = parseDotenvFile(modeFilePath, options.verbose)
+    console.log('rn-config-env:env-modeParsed:path:', modeFilePath)
     console.log('rn-config-env:env-modeLocalParsed:path:', modeLocalFilePath)
+  }
+  if (options.safe) {
+    const parsed = parseDotenvFile(options.path, options.verbose)
+    const localParsed = parseDotenvFile(localFilePath, options.verbose)
+    const modeParsed = parseDotenvFile(modeFilePath, options.verbose)
     const modeLocalParsed = parseDotenvFile(modeLocalFilePath, options.verbose)
 
     this.env = safeObjectAssign(Object.assign(Object.assign(Object.assign(parsed, modeParsed), localParsed), modeLocalParsed), dotenvTemporary, ['NODE_ENV', 'BABEL_ENV', options.envName])
@@ -119,10 +117,6 @@ module.exports = (api, options) => {
         envName: 'ENVFILE',
         moduleName: '@env',
         path: '.env',
-        whitelist: null,
-        blacklist: null,
-        allowlist: null,
-        blocklist: null,
         safe: false,
         allowUndefined: true,
         verbose: false,
@@ -130,16 +124,18 @@ module.exports = (api, options) => {
       }
 
       const dotenvTemporary = Object.assign({}, process.env)
-      if (this.opts.safe) {
+      if (options.verbose) {
         console.log('rn-config-env:env-parsed:path:', options.path)
-        const parsed = parseDotenvFile(this.opts.path, this.opts.verbose)
         console.log('rn-config-env:env-localParsed:path:', localFilePath)
-        const localParsed = parseDotenvFile(localFilePath, options.verbose)
         console.log('rn-config-env:env-modeParsed:path:', modeParsed)
-        const modeParsed = parseDotenvFile(modeFilePath, options.verbose)
         console.log('rn-config-env:env-modeLocalParsed:path:', modeLocalFilePath)
-        const modeLocalParsed = parseDotenvFile(modeLocalFilePath, options.verbose)
+      }
 
+      if (this.opts.safe) {
+        const parsed = parseDotenvFile(this.opts.path, this.opts.verbose)
+        const localParsed = parseDotenvFile(localFilePath, options.verbose)
+        const modeParsed = parseDotenvFile(modeFilePath, options.verbose)
+        const modeLocalParsed = parseDotenvFile(modeLocalFilePath, options.verbose)
         this.env = safeObjectAssign(Object.assign(Object.assign(Object.assign(parsed, modeParsed), localParsed), modeLocalParsed), dotenvTemporary, ['NODE_ENV', 'BABEL_ENV', options.envName])
         this.env.NODE_ENV = process.env.NODE_ENV || babelMode
       } else {
@@ -178,20 +174,6 @@ module.exports = (api, options) => {
             if (specifier.imported && specifier.local) {
               const importedId = specifier.imported.name
               const localId = specifier.local.name
-
-              if (Array.isArray(opts.allowlist) && !opts.allowlist.includes(importedId)) {
-                throw path.get('specifiers')[idx].buildCodeFrameError(`"${importedId}" was not present in allowlist`)
-              } else if (Array.isArray(opts.whitelist) && !opts.whitelist.includes(importedId)) {
-                console.warn('[DEPRECATION WARNING] This option is will be deprecated soon. Use allowlist instead')
-                throw path.get('specifiers')[idx].buildCodeFrameError(`"${importedId}" was not whitelisted`)
-              }
-
-              if (Array.isArray(opts.blocklist) && opts.blocklist.includes(importedId)) {
-                throw path.get('specifiers')[idx].buildCodeFrameError(`"${importedId}" was not present in blocklist`)
-              } else if (Array.isArray(opts.blacklist) && opts.blacklist.includes(importedId)) {
-                console.warn('[DEPRECATION WARNING] This option is will be deprecated soon. Use blocklist instead')
-                throw path.get('specifiers')[idx].buildCodeFrameError(`"${importedId}" was blacklisted`)
-              }
 
               if (!opts.allowUndefined && !Object.prototype.hasOwnProperty.call(this.env, importedId)) {
                 throw path.get('specifiers')[idx].buildCodeFrameError(`"${importedId}" is not defined in ${opts.path}`)

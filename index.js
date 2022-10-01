@@ -48,7 +48,6 @@ module.exports = (api, options) => {
   options = {
     moduleName: '@env',
     safe: true,
-    allowUndefined: true,
     verbose: true,
     ...options,
   }
@@ -82,8 +81,7 @@ module.exports = (api, options) => {
       this.opts = {
         moduleName: '@env',
         safe: true,
-        allowUndefined: true,
-        verbose: true,
+        verbose: false,
         ...this.opts,
       }
 
@@ -115,11 +113,6 @@ module.exports = (api, options) => {
             if (specifier.imported && specifier.local) {
               const importedId = specifier.imported.name
               const localId = specifier.local.name
-
-              if (!opts.allowUndefined && !Object.prototype.hasOwnProperty.call(this.env, importedId)) {
-                throw path.get('specifiers')[idx].buildCodeFrameError(`"${importedId}" is not defined in ${opts.path}`)
-              }
-
               const binding = path.scope.getBinding(localId)
               for (const refPath of binding.referencePaths) {
                 refPath.replaceWith(t.valueToNode(this.env[importedId]))

@@ -7,10 +7,10 @@ You can either use autolinking on react-native-windows 0.63 and later or manuall
 RNCConfig supports autolinking. Just call: `npm i react-native-config --save`
 
 ### Manual installation on RNW >= 0.62
-1. `npm install rn-config --save`
+1. `npm install rn-config-env --save`
 2. Open your solution in Visual Studio 2019 (eg. `windows\yourapp.sln`)
 3. Right-click Solution icon in Solution Explorer > Add > Existing Project...
-4. Add `node_modules\rn-config\windows\RNCConfig\RNCConfig.vcxproj`
+4. Add `node_modules\rn-config-env\windows\RNCConfig\RNCConfig.vcxproj`
 5. Right-click main application project > Add > Reference...
 6. Select `RNCConfig` in Solution Projects
 7. In app `pch.h` add `#include "winrt/RNCConfig.h"`

@@ -16,7 +16,7 @@ GOOGLE_MAPS_API_KEY=abcdefgh
 Then access variables defined there from your app:
 
 ```js
-import {API_URL, GOOGLE_MAPS_API_KEY}} from "rn-config";
+import {API_URL, GOOGLE_MAPS_API_KEY} from "rn-config";
 
 API_URL; // 'https://myapi.com'
 GOOGLE_MAPS_API_KEY; // 'abcdefgh'
@@ -29,7 +29,7 @@ Keep in mind this module doesn't obfuscate or encrypt secrets for packaging, so 
 Install the package:
 
 ```
-$ yarn add rn-config
+$ yarn add rn-config-env
 ```
 
 Link the library:
@@ -40,7 +40,7 @@ Link the library:
 or later. For earlier versions you need to manually link the module.)
 
 ```
-$ react-native link rn-config
+$ react-native link rn-config-env
 ```
 
 if cocoapods are used in the project then pod has to be installed as well:
@@ -52,11 +52,11 @@ if cocoapods are used in the project then pod has to be installed as well:
  - Manual Link (iOS)
 
 	1. In XCode, in the project navigator, right click `Libraries` ➜ `Add 		Files to [your project's name]`
-	2. Go to `node_modules` ➜ `rn-config` and add 		`ReactNativeConfig.xcodeproj`
+	2. Go to `node_modules` ➜ `rn-config-env` and add 		`ReactNativeConfig.xcodeproj`
 	3. Expand the `ReactNativeConfig.xcodeproj` ➜ `Products` folder
 	4. In the project navigator, select your project. Add 		`libReactNativeConfig.a` to your project's `Build Phases` ➜ `Link Binary With Libraries`
 	5. And go the Build Settings tab. Make sure All is toggled on (instead of Basic)
-	6. Look for Header Search Paths and add `$(SRCROOT)/../node_modules/rn-config/ios/**` as `non-recursive`
+	6. Look for Header Search Paths and add `$(SRCROOT)/../node_modules/rn-config-env/ios/**` as `non-recursive`
 
 
  - Manual Link (Android) 
@@ -64,15 +64,15 @@ if cocoapods are used in the project then pod has to be installed as well:
 	**android/settings.gradle**
 	
 	```diff
-	+ include ':rn-config'
-	+ project(':rn-config').projectDir = new File(rootProject.projectDir, '../node_modules/rn-config/android')
+	+ include ':rn-config-env'
+	+ project(':rn-config-env').projectDir = new File(rootProject.projectDir, '../node_modules/rn-config-env/android')
 	```
 	**android/app/build.gradle**
 	
 	```diff
 	dependencies {
 		implementation "com.facebook.react:react-native:+"  // From node_modules
-	+	implementation project(':rn-config')
+	+	implementation project(':rn-config-env')
 	}
 	```
 	**MainApplication.java**
@@ -97,8 +97,8 @@ if cocoapods are used in the project then pod has to be installed as well:
 
 	1. Open the solution in Visual Studio 2019
 	2. Right-click Solution icon in Solution Explorer > Add > Existing Project  
-	  - if using `react-native-windows@0.62` or later select `node_modules\rn-config\windows\RNCConfig\RNCConfig.vcxproj`
-		- if using `react-native-windows@0.61` select `node_modules\rn-config\windows\RNCConfig61\RNCConfig61.vcxproj`
+	  - if using `react-native-windows@0.62` or later select `node_modules\rn-config-env\windows\RNCConfig\RNCConfig.vcxproj`
+		- if using `react-native-windows@0.61` select `node_modules\rn-config-env\windows\RNCConfig61\RNCConfig61.vcxproj`
 
 	**windows/myapp/myapp.vcxproj**
 
@@ -121,7 +121,7 @@ You'll also need to manually apply a plugin to your app, from `android/app/build
 
 ```
 // 2nd line, add a new apply:
-apply from: "../../node_modules/rn-config/android/dotenv.gradle"
+apply from: "../../node_modules/rn-config-env/android/dotenv.gradle"
 ```
 
 #### Advanced Android Setup
@@ -213,7 +213,7 @@ With one extra step environment values can be exposed to "Info.plist" and Build 
 3. add the following to your ".gitignore":
 
 ```
-# rn-config codegen
+# rn-config-env codegen
 ios/tmp.xcconfig
 
 ```
@@ -224,7 +224,7 @@ ios/tmp.xcconfig
 6. Go to _Edit scheme..._ -> _Build_ -> _Pre-actions_, click _+_ and select _New Run Script Action_. Paste below code which will generate "tmp.xcconfig" before each build exposing values to Build Settings and Info.plist. Make sure to select your target under _Provide build settings from_, so `$SRCROOT` environment variables is available to the script. (Note that this snippet has to be placed after "cp ... \${PROJECT_DIR}/../.env" if [approach explained below](#ios-multi-scheme) is used).
 
    ```
-   "${SRCROOT}/../node_modules/rn-config/ios/ReactNativeConfig/BuildXCConfig.rb" "${SRCROOT}/.." "${SRCROOT}/tmp.xcconfig"
+   "${SRCROOT}/../node_modules/rn-config-env/ios/ReactNativeConfig/BuildXCConfig.rb" "${SRCROOT}/.." "${SRCROOT}/tmp.xcconfig"
    ```
 
    ![img](./readme-pics/4.ios_pre_actions.png)
@@ -233,16 +233,16 @@ ios/tmp.xcconfig
 
 #### App Extensions
 
-Add dependency to `rn-config`.
+Add dependency to `rn-config-env`.
 
 ```
 target 'ShareExtension' do
   platform :ios, '9.0'
 
-  pod 'rn-config', :path => '../node_modules/rn-config'
+  pod 'rn-config-env', :path => '../node_modules/rn-config-env'
 
   # For extensions without React dependencies
-  pod 'rn-config/Extension', :path => '../node_modules/rn-config'
+  pod 'rn-config-env/Extension', :path => '../node_modules/rn-config-env'
 end
 ```
 
@@ -250,7 +250,7 @@ end
 
 Save config for different environments in different files: `.env.staging`, `.env.production`, etc.
 
-By default rn-config will read from `.env`, but you can change it when building or releasing your app.
+By default rn-config-env will read from `.env`, but you can change it when building or releasing your app.
 
 The simplest approach is to tell it what file to read with an environment variable, like:
 
@@ -279,7 +279,7 @@ project.ext.envConfigFiles = [
     anothercustombuild: ".env",
 ]
 
-apply from: "../../node_modules/rn-config/android/dotenv.gradle"
+apply from: "../../node_modules/rn-config-env/android/dotenv.gradle"
 ```
 
 Also note that besides requiring lowercase, the matching is done with `buildFlavor.startsWith`, so a build named `debugProd` could match the `debug` case, above.
@@ -317,7 +317,7 @@ ENVFILES = {
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     target.build_configurations.each do |config|
-      if target.name == 'rn-config'
+      if target.name == 'rn-config-env'
         config.build_settings['ENVFILE'] = ENVFILES[config.name]
       end
     end
@@ -341,7 +341,7 @@ Note that if you have flipper enabled in your Podfile, you must move the `flippe
 
     installer.pods_project.targets.each do |target|
       target.build_configurations.each do |config|
-        if target.name == 'rn-config'
+        if target.name == 'rn-config-env'
           config.build_settings['ENVFILE'] = ENVFILES[config.name]
         end
       end

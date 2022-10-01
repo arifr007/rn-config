@@ -1,6 +1,6 @@
 {
-  "name": "rn-config",
-  "version": "1.0.0",
+  "name": "rn-config-env",
+  "version": "1.0.1",
   "description": "Expose config variables to React Native apps",
   "scripts": {
     "lint": "xo",
@@ -22,14 +22,14 @@
     "react-native",
     "windows"
   ],
-  "homepage": "https://github.com/arifr007/rn-config",
+  "homepage": "https://github.com/arifr007/rn-config-env",
   "main": "index.js",
   "contributors": [
     "Arif R <r07.arif@gmail.com> (https://github.com/arifr007)"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/arifr007/rn-config"
+    "url": "https://github.com/arifr007/rn-config-env"
   },
   "private": false,
   "author": "Arif R",
@@ -38,7 +38,7 @@
     "ios/",
     "windows/",
     "index.js",
-    "rn-config.podspec",
+    "rn-config-env.podspec",
     "!.*ignore"
   ],
   "license": "MIT",

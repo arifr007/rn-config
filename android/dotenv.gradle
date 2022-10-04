@@ -23,7 +23,7 @@ def getCurrentFlavor() {
 
 def loadDotEnv(flavor = getCurrentFlavor()) {
     def envMode = false
-    def envPath = '.env'
+    def envPath = false
     if (project.hasProperty('envConfigFiles')) {
         // use startsWith because sometimes the task is "generateDebugSources", so we want to match "debug"
         project.ext.envConfigFiles.any { pair ->
@@ -33,7 +33,7 @@ def loadDotEnv(flavor = getCurrentFlavor()) {
             }
         }
     }
-    if (!envMode) {
+    if (!envMode && !envPath) {
         if (System.env['ENVMODE']) {
             envMode = System.env['ENVMODE']
       } else if (System.getProperty('ENVMODE')) {

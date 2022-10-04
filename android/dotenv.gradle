@@ -40,8 +40,14 @@ def loadDotEnv(flavor = getCurrentFlavor()) {
             envMode = System.getProperty('ENVMODE')
       }else {
             envMode = 'development'
-        }
+      }
+      if(envMode.startsWith('dev')){
+        envPath = "${envPath}.development"
+      } else if(envMode.startsWith('prod')){
+        envPath = "${envPath}.production"
+      } else {
         envPath = "${envPath}.${envMode}"
+      }
     }
 
     def env = [:]

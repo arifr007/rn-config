@@ -56,9 +56,9 @@ module.exports = (api, options) => {
   const envPath = `.env.${envMode}`
 
   console.log('Reading env from:', envPath)
-  
+
   api.cache.using(() => mtime(envPath))
-  
+
   const dotenvTemporary = Object.assign({}, process.env)
   if (options.safe) {
     const envParsed = parseDotenvFile(envPath, options.verbose)

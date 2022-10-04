@@ -8,7 +8,7 @@
 .nyc_output
 .pnp.*
 .vs
-.yarn/*
+.yarn/
 /.idea/
 coverage
 node_modules
@@ -16,3 +16,5 @@ reports
 xcshareddata
 xcuserdata
 .vscode
+android/.gradle/
+*.log

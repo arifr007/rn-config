@@ -7,8 +7,8 @@ def getCurrentFlavor() {
     // match optional modules followed by the task
     // (?:.*:)* is a non-capturing group to skip any :foo:bar: if they exist
     // *[a-z]+([A-Za-z]+) will capture the flavor part of the task name onward (e.g., assembleRelease --> Release)
-    def pattern = Pattern.compile("(?:.*:)*[a-z]+([A-Z][A-Za-z0-9]+)")
-    def flavor = ""
+    def pattern = Pattern.compile('(?:.*:)*[a-z]+([A-Z][A-Za-z0-9]+)')
+    def flavor = ''
 
     gradle.getStartParameter().getTaskNames().any { name ->
         Matcher matcher = pattern.matcher(name)
@@ -22,33 +22,34 @@ def getCurrentFlavor() {
 }
 
 def loadDotEnv(flavor = getCurrentFlavor()) {
-
-    def envFile = false
-    if (project.hasProperty("envConfigFiles")) {
+    def envMode = false
+    def envPath = '.env'
+    if (project.hasProperty('envConfigFiles')) {
         // use startsWith because sometimes the task is "generateDebugSources", so we want to match "debug"
         project.ext.envConfigFiles.any { pair ->
             if (flavor.startsWith(pair.key.toLowerCase())) {
-                envFile = pair.value
+                envPath = pair.value
                 return true
             }
         }
     }
-    if(!envFile) {
-      if (System.env['ENVFILE']) {
-          envFile = System.env['ENVFILE']
-      } else if (System.getProperty('ENVFILE')) {
-          envFile = System.getProperty('ENVFILE')
-      }else{
-        envFile = '.env'
-      }
+    if (!envMode) {
+        if (System.env['ENVMODE']) {
+            envMode = System.env['ENVMODE']
+      } else if (System.getProperty('ENVMODE')) {
+            envMode = System.getProperty('ENVMODE')
+      }else {
+            envMode = 'development'
+        }
+        envPath = "${envPath}.${envMode}"
     }
 
     def env = [:]
-    println("Reading env from: $envFile")
+    println("Reading env from: $envPath")
 
-    File f = new File("$project.rootDir/../$envFile");
+    File f = new File("$project.rootDir/../$envPath")
     if (!f.exists()) {
-        f = new File("$envFile");
+        f = new File("$envPath")
     }
 
     if (f.exists()) {
@@ -61,12 +62,12 @@ def loadDotEnv(flavor = getCurrentFlavor()) {
             }
         }
     } else {
-        println("**************************")
-        println("*** Missing .env file ****")
-        println("**************************")
+        println('**************************')
+        println('*** Missing .env file ****')
+        println('**************************')
     }
 
-    project.ext.set("env", env)
+    project.ext.set('env', env)
 }
 
 loadDotEnv()
@@ -74,9 +75,9 @@ loadDotEnv()
 android {
     defaultConfig {
         project.env.each { k, v ->
-            def escaped = v.replaceAll("%","\\\\u0025")
-            buildConfigField "String", k, "\"$v\""
-            resValue "string", k, "\"$escaped\""
+            def escaped = v.replaceAll('%', "\\\\u0025")
+            buildConfigField 'String', k, "\"$v\""
+            resValue 'string', k, "\"$escaped\""
         }
     }
 }
